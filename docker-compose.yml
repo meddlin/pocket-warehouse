@@ -1,0 +1,47 @@
+version: "3.8"
+services:
+  db:
+    image: postgres
+    container_name: local_pgdb
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: user-name
+      POSTGRES_PASSWORD: strong-password
+      POSTGRES_DB: every-budget
+    volumes:
+      - local_pgdata:/var/lib/postgresql/data
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin4_container
+    restart: always
+    ports:
+      - "8080:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: user-name@domain-name.com
+      PGADMIN_DEFAULT_PASSWORD: strong-password
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    restart: always
+    ports:
+      - "3030:3000"
+    environment:
+      - GF_DATABASE_TYPE=postgres
+      - GF_DATABASE_HOST=db
+      - GF_DATABASE_PORT=5432
+      - GF_DATABASE_NAME=every-budget
+      - GF_DATABASE_USER=user-name
+      - GF_DATABASE_PASSWORD=strong-password
+    volumes:
+      - grafana-storage:/var/lib/grafana
+    depends_on:
+      - db
+
+volumes:
+  local_pgdata: 
+  pgadmin-data:
+  grafana-storage:
